@@ -6,7 +6,9 @@ const ProductListing = ({ products }) => {
 };
 
 const ProductList = ({ products }) => {
-  const children = products.map((product) => ce(Product, product));
+  const children = products.map((product) =>
+    ce(Product, { ...product, key: product.id }),
+  );
   return ce("ul", { className: "product-list" }, ...children);
 };
 
@@ -14,7 +16,7 @@ const Product = (product) => {
   return ce("li", { className: "product" }, ce(ProductDetails, product));
 };
 
-const ProductDetails = ({ id, title, price, quantity }) => {
+const ProductDetails = ({ title, price, quantity }) => {
   const children = [
     ce("h3", null, title),
     ce("p", { className: "price" }, `$${price}`),
@@ -22,7 +24,7 @@ const ProductDetails = ({ id, title, price, quantity }) => {
     ce(ProductActions),
     ce(DeleteButton),
   ];
-  return ce("div", { key: id, className: "product-details" }, ...children);
+  return ce("div", { className: "product-details" }, ...children);
 };
 
 const ProductActions = () => {
