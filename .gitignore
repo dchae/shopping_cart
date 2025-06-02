@@ -1,7 +1,7 @@
-/node_modules
+*/node_modules/
 
-.env
+client/.parchel-cache/
+client/dist/*
 
-/client/.parchel-cache
-
+**/.env
 **/.DS_Store
