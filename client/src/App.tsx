@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getProducts } from "./services/apiService";
+import apiService from "./services/apiService";
+import utils from "./utils";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 import AddProductForm from "./components/AddProductForm";
@@ -9,30 +10,15 @@ import type {
   NewProduct as NewProductType,
 } from "./types";
 
-const mockCart: Array<CartItemType> = [
-  {
-    _id: "a1",
-    productId: "1",
-    title: "Amazon Kindle E-reader",
-    quantity: 1,
-    price: 79.99,
-  },
-  {
-    _id: "a2",
-    productId: "2",
-    title: "Apple 10.5-Inch iPad Pro",
-    quantity: 3,
-    price: 649.99,
-  },
-];
-
 function App() {
   const [products, setProducts] = useState<Array<ProductType>>([]);
-  const [cartItems, setCartItems] = useState<Array<CartItemType>>(mockCart);
+  const [cartItems, setCartItems] = useState<Array<CartItemType>>(
+    utils.getCartItems,
+  );
   const [showAddProductForm, setShowAddProductForm] = useState<boolean>(false);
 
   useEffect(() => {
-    getProducts().then((products) => {
+    apiService.getProducts().then((products) => {
       setProducts(products);
     });
   }, []);
@@ -61,6 +47,17 @@ function App() {
     setProducts(products.filter((p) => p._id !== id));
   };
 
+  const addProductButton = (
+    <p>
+      <button
+        className="add-product-button"
+        onClick={() => setShowAddProductForm(true)}
+      >
+        Add A Product
+      </button>
+    </p>
+  );
+
   return (
     <>
       <header>
@@ -79,14 +76,7 @@ function App() {
             hideForm={() => setShowAddProductForm(false)}
           />
         ) : (
-          <p>
-            <button
-              className="add-product-button"
-              onClick={() => setShowAddProductForm(true)}
-            >
-              Add A Product
-            </button>
-          </p>
+          addProductButton
         )}
       </main>
     </>
