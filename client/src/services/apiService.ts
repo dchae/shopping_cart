@@ -1,4 +1,6 @@
-export const mockProducts = [
+import type { Product as ProductType } from "../types";
+
+const mockProducts: Array<ProductType> = [
   {
     _id: "1",
     title: "Amazon Kindle E-reader",
@@ -25,19 +27,6 @@ export const mockProducts = [
   },
 ];
 
-export const mockCart = [
-  {
-    _id: "a1",
-    productId: "1",
-    title: "Amazon Kindle E-reader",
-    quantity: 1,
-    price: 79.99,
-  },
-  {
-    _id: "a2",
-    productId: "2",
-    title: "Apple 10.5-Inch iPad Pro",
-    quantity: 3,
-    price: 649.99,
-  },
-];
+export const getProducts = async (): Promise<Array<ProductType>> => {
+  return mockProducts;
+};
