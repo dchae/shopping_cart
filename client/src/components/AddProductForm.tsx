@@ -4,11 +4,11 @@ import type { NewProduct } from "../types";
 import type { Product as ProductType } from "../types";
 
 interface AddProductFormProps {
-  handleAddProduct: (data: NewProduct) => void;
+  onSubmit: (data: NewProduct, callback?: () => void) => void;
   hide: () => void;
 }
 
-const AddProductForm = ({ handleAddProduct, hide }: AddProductFormProps) => {
+const AddProductForm = ({ onSubmit, hide }: AddProductFormProps) => {
   const [formValues, setFormValues] = useState({
     title: "",
     price: "",
@@ -22,14 +22,27 @@ const AddProductForm = ({ handleAddProduct, hide }: AddProductFormProps) => {
     };
   };
 
+  const handleReset = () => {
+    setFormValues({
+      title: "",
+      price: "",
+      quantity: "",
+    });
+
+    hide();
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    handleAddProduct({
-      title: title,
-      price: Number(price),
-      quantity: Number(quantity),
-    });
+    onSubmit(
+      {
+        title: title,
+        price: Number(price),
+        quantity: Number(quantity),
+      },
+      handleReset,
+    );
   };
 
   return (

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import apiService from "./services/apiService";
-import utils from "./utils";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 import AddProductForm from "./components/AddProductForm";
@@ -12,40 +11,74 @@ import type {
 
 const App = () => {
   const [products, setProducts] = useState<Array<ProductType>>([]);
-  const [cartItems, setCartItems] = useState<Array<CartItemType>>(
-    utils.getCartItems,
-  );
+  const [cartItems, setCartItems] = useState<Array<CartItemType>>([]);
   const [showAddProductForm, setShowAddProductForm] = useState<boolean>(false);
 
-  useEffect(() => {
-    apiService.getProducts().then((products) => {
-      setProducts(products);
-    });
-  }, []);
+  const handleAddToCart = async (productId: string) => {
+    await apiService.addToCart(productId);
+    setProducts(await apiService.getProducts());
+    setCartItems(await apiService.getCartItems());
+  };
 
-  const handleAddToCart = (newItem: CartItemType) => {
-    setCartItems((items) => {
-      if (items.some((item) => item._id === newItem._id)) {
-        return items.map((item) =>
-          item._id === newItem._id
-            ? { ...item, quantity: item.quantity + newItem.quantity }
-            : item,
+  const handleAddProduct = async (
+    data: NewProductType,
+    callback?: () => void,
+  ) => {
+    try {
+      // TODO: optimise this so no need for another fetch
+
+      await apiService.createProduct(data);
+      setProducts(await apiService.getProducts());
+
+      if (callback) callback();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      await apiService.deleteProduct(id);
+      setProducts(products.filter((p) => p._id !== id));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleUpdateProduct = async (
+    id: string,
+    data: NewProductType,
+    callback?: () => void,
+  ) => {
+    try {
+      const updatedProduct = await apiService.updateProduct(id, data);
+      setProducts((products) => {
+        return products.map((product) =>
+          product._id === id ? updatedProduct : product,
         );
-      } else {
-        return [...items, newItem];
-      }
-    });
+      });
+
+      if (callback) callback();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleAddProduct = (data: NewProductType) => {
-    const id = String(1 + Math.max(...products.map((p) => Number(p._id))));
-    const newProduct = { ...data, _id: id };
-    setProducts([...products, newProduct]);
+  const handleCheckoutCart = async () => {
+    try {
+      await apiService.checkoutCart();
+      setCartItems([]);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleDeleteProduct = (id: string) => {
-    setProducts(products.filter((p) => p._id !== id));
-  };
+  useEffect(() => {
+    (async () => {
+      setProducts(await apiService.getProducts());
+      setCartItems(await apiService.getCartItems());
+    })();
+  }, []);
 
   const addProductButton = (
     <p>
@@ -62,17 +95,18 @@ const App = () => {
     <>
       <header>
         <h1>The Shop!</h1>
-        <Cart items={cartItems} />
+        <Cart items={cartItems} onCheckout={handleCheckoutCart} />
       </header>
       <main>
         <ProductList
           products={products}
-          handleAddToCart={handleAddToCart}
-          handleDeleteProduct={handleDeleteProduct}
+          onAddToCart={handleAddToCart}
+          onDeleteProduct={handleDeleteProduct}
+          onUpdateProduct={handleUpdateProduct}
         />
         {showAddProductForm ? (
           <AddProductForm
-            handleAddProduct={handleAddProduct}
+            onSubmit={handleAddProduct}
             hide={() => setShowAddProductForm(false)}
           />
         ) : (

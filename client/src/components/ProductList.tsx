@@ -1,19 +1,25 @@
 import Product from "./Product";
 import type {
   Product as ProductType,
-  CartItem as CartItemType,
+  NewProduct as NewProductType,
 } from "../types";
 
 interface ProductListProps {
   products: Array<ProductType>;
-  handleAddToCart: (item: CartItemType) => void;
-  handleDeleteProduct: (_id: string) => void;
+  onAddToCart: (productId: string) => void;
+  onDeleteProduct: (_id: string) => void;
+  onUpdateProduct: (
+    id: string,
+    data: NewProductType,
+    callback?: () => void,
+  ) => void;
 }
 
 const ProductList = ({
   products,
-  handleAddToCart,
-  handleDeleteProduct,
+  onAddToCart,
+  onDeleteProduct,
+  onUpdateProduct,
 }: ProductListProps) => {
   return (
     <div className="product-listing">
@@ -23,8 +29,9 @@ const ProductList = ({
           <Product
             key={product._id}
             product={product}
-            handleAddToCart={handleAddToCart}
-            handleDeleteProduct={handleDeleteProduct}
+            onAddToCart={onAddToCart}
+            onDeleteProduct={onDeleteProduct}
+            onUpdateProduct={onUpdateProduct}
           />
         ))}
       </ul>

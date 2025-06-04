@@ -1,26 +1,40 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
-import type { Product as ProductType } from "../types";
+import type {
+  Product as ProductType,
+  NewProduct as NewProductType,
+} from "../types";
 
 interface EditProductFormProps {
   product: ProductType;
+  onSubmit: (id: string, data: NewProductType, callback?: () => void) => void;
   hide: () => void;
 }
 
-const EditProductForm = ({ product, hide }: EditProductFormProps) => {
-  const [formValues, setFormValues] = useState<ProductType>(product);
-  const { title, price, quantity } = formValues;
+const EditProductForm = ({ product, hide, onSubmit }: EditProductFormProps) => {
+  const initialValue: NewProductType = {
+    title: product.title,
+    price: product.price,
+    quantity: product.quantity,
+  };
+  const [newProduct, setNewProduct] = useState<NewProductType>(initialValue);
+  const { title, price, quantity } = newProduct;
 
   const valueChangeHandler = (prop: keyof ProductType) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
-      setFormValues((p) => ({ ...p, [prop]: e.target.value }));
+      setNewProduct((p) => ({ ...p, [prop]: e.target.value }));
     };
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSubmit(product._id, newProduct, hide);
   };
 
   return (
     <div className="edit-form">
       <h3>Edit Product</h3>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label htmlFor="product-name">Product Name</label>
           <input
@@ -55,7 +69,7 @@ const EditProductForm = ({ product, hide }: EditProductFormProps) => {
         </div>
 
         <div className="actions form-actions">
-          <button type="button">Update</button>
+          <button type="submit">Update</button>
           <button type="button" onClick={hide}>
             Cancel
           </button>

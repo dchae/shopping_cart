@@ -2,31 +2,30 @@ import { useState } from "react";
 import EditProductForm from "./EditProductForm";
 import type {
   Product as ProductType,
-  CartItem as CartItemType,
+  NewProduct as NewProductType,
 } from "../types";
 
 interface ProductProps {
   product: ProductType;
-  handleAddToCart: (item: CartItemType) => void;
-  handleDeleteProduct: (_id: string) => void;
+  onAddToCart: (productId: string) => void;
+  onDeleteProduct: (_id: string) => void;
+  onUpdateProduct: (
+    id: string,
+    data: NewProductType,
+    callback?: () => void,
+  ) => void;
 }
 
 const Product = ({
   product,
-  handleAddToCart,
-  handleDeleteProduct,
+  onAddToCart,
+  onDeleteProduct,
+  onUpdateProduct,
 }: ProductProps) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const { _id, title, price, quantity } = product;
-  const onAddToCartButtonClick = () => {
-    const cartItem = {
-      _id: "a" + _id,
-      productId: _id,
-      title,
-      price,
-      quantity: 1,
-    };
-    handleAddToCart(cartItem);
+  const handleAddToCartButtonClick = () => {
+    onAddToCart(_id);
   };
 
   return (
@@ -40,7 +39,7 @@ const Product = ({
           <div className="actions product-actions">
             <button
               className="add-to-cart"
-              onClick={onAddToCartButtonClick}
+              onClick={handleAddToCartButtonClick}
               disabled={!quantity}
             >
               Add to Cart
@@ -51,10 +50,7 @@ const Product = ({
           </div>
         )}
 
-        <button
-          className="delete-button"
-          onClick={() => handleDeleteProduct(_id)}
-        >
+        <button className="delete-button" onClick={() => onDeleteProduct(_id)}>
           <span>X</span>
         </button>
       </div>
@@ -62,6 +58,7 @@ const Product = ({
       {showEditForm && (
         <EditProductForm
           product={product}
+          onSubmit={onUpdateProduct}
           hide={() => setShowEditForm(false)}
         />
       )}
