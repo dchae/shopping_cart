@@ -2,6 +2,7 @@
 
 client/.parchel-cache/
 client/dist/*
+client/.vite/*
 
 **/.env
 **/.DS_Store
