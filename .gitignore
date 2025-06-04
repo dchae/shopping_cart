@@ -1,6 +1,6 @@
 */node_modules/
 
-client/.parchel-cache/
+client/.parcel-cache/
 client/dist/*
 client/.vite/*
 
