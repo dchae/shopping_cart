@@ -35,23 +35,27 @@ const Product = ({ product, addToCart, deleteProduct }: ProductProps) => {
         <h3>{title}</h3>
         <p className="price">${price}</p>
         <p className="quantity">{quantity} left in stock</p>
-        <div className="actions product-actions">
-          <button
-            className="add-to-cart"
-            onClick={handleAddToCart}
-            disabled={!quantity}
-          >
-            Add to Cart
-          </button>{" "}
-          <button className="edit" onClick={handleEditButtonClick}>
-            Edit
-          </button>
-        </div>
+
+        {!showEditForm && (
+          <div className="actions product-actions">
+            <button
+              className="add-to-cart"
+              onClick={handleAddToCart}
+              disabled={!quantity}
+            >
+              Add to Cart
+            </button>{" "}
+            <button className="edit" onClick={handleEditButtonClick}>
+              Edit
+            </button>
+          </div>
+        )}
 
         <button className="delete-button" onClick={() => deleteProduct(_id)}>
           <span>X</span>
         </button>
       </div>
+
       {showEditForm && (
         <EditProductForm product={product} setShowEditForm={setShowEditForm} />
       )}

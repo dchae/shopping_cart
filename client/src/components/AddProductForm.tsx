@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent, ChangeEvent } from "react";
 import type { NewProduct } from "../types";
+import type { Product as ProductType } from "../types";
 
 interface AddProductFormProps {
   addProduct: (data: NewProduct) => void;
@@ -8,31 +9,29 @@ interface AddProductFormProps {
 }
 
 const AddProductForm = ({ addProduct, hideForm }: AddProductFormProps) => {
-  const [name, setName] = useState<string>("");
-  const [price, setPrice] = useState<string>("");
-  const [quantity, setQuantity] = useState<string>("");
+  const [formValues, setFormValues] = useState({
+    title: "",
+    price: "",
+    quantity: "",
+  });
+  const { title, price, quantity } = formValues;
 
-  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
-
-  const handlePriceChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPrice(e.target.value);
-  };
-
-  const handleQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuantity(e.target.value);
+  const valueChangeHandler = (prop: keyof ProductType) => {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setFormValues((p) => ({ ...p, [prop]: e.target.value }));
+    };
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     addProduct({
-      title: name,
+      title: title,
       price: Number(price),
       quantity: Number(quantity),
     });
   };
+
   return (
     <div className="add-form">
       <form onSubmit={handleSubmit}>
@@ -42,11 +41,12 @@ const AddProductForm = ({ addProduct, hideForm }: AddProductFormProps) => {
             type="text"
             id="product-name"
             name="product-name"
-            value={name}
-            onChange={handleNameChange}
+            value={title}
+            onChange={valueChangeHandler("title")}
             required
           />
         </div>
+
         <div className="input-group">
           <label htmlFor="product-price">Price:</label>
           <input
@@ -56,10 +56,11 @@ const AddProductForm = ({ addProduct, hideForm }: AddProductFormProps) => {
             min="0"
             step="0.01"
             value={price}
-            onChange={handlePriceChange}
+            onChange={valueChangeHandler("price")}
             required
           />
         </div>
+
         <div className="input-group">
           <label htmlFor="product-quantity">Quantity:</label>
           <input
@@ -68,10 +69,11 @@ const AddProductForm = ({ addProduct, hideForm }: AddProductFormProps) => {
             name="product-quantity"
             min="0"
             value={quantity}
-            onChange={handleQuantityChange}
+            onChange={valueChangeHandler("quantity")}
             required
           />
         </div>
+
         <div className="actions form-actions">
           <button type="submit">Add</button>{" "}
           <button type="button" onClick={hideForm}>
