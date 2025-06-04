@@ -4,13 +4,10 @@ import type { Product as ProductType } from "../types";
 
 interface EditProductFormProps {
   product: ProductType;
-  setShowEditForm: (val: boolean) => void;
+  hide: () => void;
 }
 
-const EditProductForm = ({
-  product,
-  setShowEditForm,
-}: EditProductFormProps) => {
+const EditProductForm = ({ product, hide }: EditProductFormProps) => {
   const [formValues, setFormValues] = useState<ProductType>(product);
   const { title, price, quantity } = formValues;
 
@@ -59,7 +56,7 @@ const EditProductForm = ({
 
         <div className="actions form-actions">
           <button type="button">Update</button>
-          <button type="button" onClick={() => setShowEditForm(false)}>
+          <button type="button" onClick={hide}>
             Cancel
           </button>
         </div>

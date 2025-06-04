@@ -7,14 +7,18 @@ import type {
 
 interface ProductProps {
   product: ProductType;
-  addToCart: (item: CartItemType) => void;
-  deleteProduct: (_id: string) => void;
+  handleAddToCart: (item: CartItemType) => void;
+  handleDeleteProduct: (_id: string) => void;
 }
 
-const Product = ({ product, addToCart, deleteProduct }: ProductProps) => {
+const Product = ({
+  product,
+  handleAddToCart,
+  handleDeleteProduct,
+}: ProductProps) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const { _id, title, price, quantity } = product;
-  const handleAddToCart = () => {
+  const onAddToCartButtonClick = () => {
     const cartItem = {
       _id: "a" + _id,
       productId: _id,
@@ -22,11 +26,7 @@ const Product = ({ product, addToCart, deleteProduct }: ProductProps) => {
       price,
       quantity: 1,
     };
-    addToCart(cartItem);
-  };
-
-  const handleEditButtonClick = () => {
-    setShowEditForm((val) => !val);
+    handleAddToCart(cartItem);
   };
 
   return (
@@ -40,24 +40,30 @@ const Product = ({ product, addToCart, deleteProduct }: ProductProps) => {
           <div className="actions product-actions">
             <button
               className="add-to-cart"
-              onClick={handleAddToCart}
+              onClick={onAddToCartButtonClick}
               disabled={!quantity}
             >
               Add to Cart
             </button>{" "}
-            <button className="edit" onClick={handleEditButtonClick}>
+            <button className="edit" onClick={() => setShowEditForm(true)}>
               Edit
             </button>
           </div>
         )}
 
-        <button className="delete-button" onClick={() => deleteProduct(_id)}>
+        <button
+          className="delete-button"
+          onClick={() => handleDeleteProduct(_id)}
+        >
           <span>X</span>
         </button>
       </div>
 
       {showEditForm && (
-        <EditProductForm product={product} setShowEditForm={setShowEditForm} />
+        <EditProductForm
+          product={product}
+          hide={() => setShowEditForm(false)}
+        />
       )}
     </li>
   );

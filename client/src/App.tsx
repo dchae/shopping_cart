@@ -10,7 +10,7 @@ import type {
   NewProduct as NewProductType,
 } from "./types";
 
-function App() {
+const App = () => {
   const [products, setProducts] = useState<Array<ProductType>>([]);
   const [cartItems, setCartItems] = useState<Array<CartItemType>>(
     utils.getCartItems,
@@ -23,7 +23,7 @@ function App() {
     });
   }, []);
 
-  const addToCart = (newItem: CartItemType) => {
+  const handleAddToCart = (newItem: CartItemType) => {
     setCartItems((items) => {
       if (items.some((item) => item._id === newItem._id)) {
         return items.map((item) =>
@@ -37,13 +37,13 @@ function App() {
     });
   };
 
-  const addProduct = (data: NewProductType) => {
+  const handleAddProduct = (data: NewProductType) => {
     const id = String(1 + Math.max(...products.map((p) => Number(p._id))));
     const newProduct = { ...data, _id: id };
     setProducts([...products, newProduct]);
   };
 
-  const deleteProduct = (id: string) => {
+  const handleDeleteProduct = (id: string) => {
     setProducts(products.filter((p) => p._id !== id));
   };
 
@@ -67,13 +67,13 @@ function App() {
       <main>
         <ProductList
           products={products}
-          addToCart={addToCart}
-          deleteProduct={deleteProduct}
+          handleAddToCart={handleAddToCart}
+          handleDeleteProduct={handleDeleteProduct}
         />
         {showAddProductForm ? (
           <AddProductForm
-            addProduct={addProduct}
-            hideForm={() => setShowAddProductForm(false)}
+            handleAddProduct={handleAddProduct}
+            hide={() => setShowAddProductForm(false)}
           />
         ) : (
           addProductButton
@@ -81,6 +81,6 @@ function App() {
       </main>
     </>
   );
-}
+};
 
 export default App;

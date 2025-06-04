@@ -6,14 +6,14 @@ import type {
 
 interface ProductListProps {
   products: Array<ProductType>;
-  addToCart: (item: CartItemType) => void;
-  deleteProduct: (_id: string) => void;
+  handleAddToCart: (item: CartItemType) => void;
+  handleDeleteProduct: (_id: string) => void;
 }
 
 const ProductList = ({
   products,
-  addToCart,
-  deleteProduct,
+  handleAddToCart,
+  handleDeleteProduct,
 }: ProductListProps) => {
   return (
     <div className="product-listing">
@@ -23,8 +23,8 @@ const ProductList = ({
           <Product
             key={product._id}
             product={product}
-            addToCart={addToCart}
-            deleteProduct={deleteProduct}
+            handleAddToCart={handleAddToCart}
+            handleDeleteProduct={handleDeleteProduct}
           />
         ))}
       </ul>
