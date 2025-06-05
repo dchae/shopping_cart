@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import apiService from "./services/apiService";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
-import AddProductForm from "./components/AddProductForm";
+import ToggleableAddProductForm from "./components/ToggleableAddProductForm";
 import type {
   Product as ProductType,
   CartItem as CartItemType,
@@ -12,7 +12,6 @@ import type {
 const App = () => {
   const [products, setProducts] = useState<Array<ProductType>>([]);
   const [cartItems, setCartItems] = useState<Array<CartItemType>>([]);
-  const [showAddProductForm, setShowAddProductForm] = useState<boolean>(false);
 
   const handleAddToCart = async (productId: string, callback?: () => void) => {
     try {
@@ -98,17 +97,6 @@ const App = () => {
     })();
   }, []);
 
-  const addProductButton = (
-    <p>
-      <button
-        className="add-product-button"
-        onClick={() => setShowAddProductForm(true)}
-      >
-        Add A Product
-      </button>
-    </p>
-  );
-
   return (
     <>
       <header>
@@ -122,14 +110,7 @@ const App = () => {
           onDeleteProduct={handleDeleteProduct}
           onUpdateProduct={handleUpdateProduct}
         />
-        {showAddProductForm ? (
-          <AddProductForm
-            onSubmit={handleAddProduct}
-            hide={() => setShowAddProductForm(false)}
-          />
-        ) : (
-          addProductButton
-        )}
+        <ToggleableAddProductForm onSubmit={handleAddProduct} />
       </main>
     </>
   );

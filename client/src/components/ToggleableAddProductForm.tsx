@@ -3,12 +3,14 @@ import type { FormEvent, ChangeEvent } from "react";
 import type { NewProduct } from "../types";
 import type { Product as ProductType } from "../types";
 
-interface AddProductFormProps {
+interface ToggleableAddProductFormProps {
   onSubmit: (data: NewProduct, callback?: () => void) => void;
-  hide: () => void;
 }
 
-const AddProductForm = ({ onSubmit, hide }: AddProductFormProps) => {
+const ToggleableAddProductForm = ({
+  onSubmit,
+}: ToggleableAddProductFormProps) => {
+  const [showForm, setShowForm] = useState<boolean>(false);
   const [formValues, setFormValues] = useState({
     title: "",
     price: "",
@@ -29,7 +31,7 @@ const AddProductForm = ({ onSubmit, hide }: AddProductFormProps) => {
       quantity: "",
     });
 
-    hide();
+    setShowForm(false);
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -44,6 +46,19 @@ const AddProductForm = ({ onSubmit, hide }: AddProductFormProps) => {
       handleReset,
     );
   };
+
+  if (!showForm) {
+    return (
+      <p>
+        <button
+          className="add-product-button"
+          onClick={() => setShowForm(true)}
+        >
+          Add A Product
+        </button>
+      </p>
+    );
+  }
 
   return (
     <div className="add-form">
@@ -89,7 +104,7 @@ const AddProductForm = ({ onSubmit, hide }: AddProductFormProps) => {
 
         <div className="actions form-actions">
           <button type="submit">Add</button>{" "}
-          <button type="button" onClick={hide}>
+          <button type="button" onClick={() => setShowForm(false)}>
             Cancel
           </button>
         </div>
@@ -98,4 +113,4 @@ const AddProductForm = ({ onSubmit, hide }: AddProductFormProps) => {
   );
 };
 
-export default AddProductForm;
+export default ToggleableAddProductForm;
