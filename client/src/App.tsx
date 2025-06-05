@@ -14,10 +14,30 @@ const App = () => {
   const [cartItems, setCartItems] = useState<Array<CartItemType>>([]);
   const [showAddProductForm, setShowAddProductForm] = useState<boolean>(false);
 
-  const handleAddToCart = async (productId: string) => {
-    await apiService.addToCart(productId);
-    setProducts(await apiService.getProducts());
-    setCartItems(await apiService.getCartItems());
+  const handleAddToCart = async (productId: string, callback?: () => void) => {
+    try {
+      const [updatedProduct, updatedCartItem] =
+        await apiService.addToCart(productId);
+
+      setProducts((products) =>
+        products.map((p) =>
+          p._id === updatedProduct._id ? updatedProduct : p,
+        ),
+      );
+      setCartItems((cartItems) => {
+        if (cartItems.some((c) => c._id === updatedCartItem._id)) {
+          return cartItems.map((c) =>
+            c._id === updatedCartItem._id ? updatedCartItem : c,
+          );
+        } else {
+          return [...cartItems, updatedCartItem];
+        }
+      });
+
+      if (callback) callback();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleAddProduct = async (
@@ -25,10 +45,8 @@ const App = () => {
     callback?: () => void,
   ) => {
     try {
-      // TODO: optimise this so no need for another fetch
-
-      await apiService.createProduct(data);
-      setProducts(await apiService.getProducts());
+      const newProduct = await apiService.createProduct(data);
+      setProducts((products) => [...products, newProduct]);
 
       if (callback) callback();
     } catch (e) {
