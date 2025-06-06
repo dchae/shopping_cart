@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent } from "react";
 import type {
   Product as ProductType,
@@ -30,6 +30,10 @@ const EditProductForm = ({ product, hide, onSubmit }: EditProductFormProps) => {
     e.preventDefault();
     onSubmit(product._id, newProduct, hide);
   };
+
+  useEffect(() => {
+    setNewProduct((p) => ({ ...p, quantity: product.quantity }));
+  }, [product.quantity]);
 
   return (
     <div className="edit-form">

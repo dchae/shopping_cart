@@ -55,7 +55,7 @@ test("edit form is toggleable", async () => {
 
   expect(editFormToggleButton).toBeInTheDocument();
   await user.click(editFormToggleButton);
-  expect(editFormToggleButton).not.toBeInTheDocument();
+  expect(editFormToggleButton).toBeInTheDocument();
 
   const nameInput = screen.getByRole("textbox", { name: /product name/i });
   expect(nameInput).toBeInTheDocument();

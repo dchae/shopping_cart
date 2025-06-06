@@ -35,7 +35,7 @@ const Product = ({
         <p className="price">${price}</p>
         <p className="quantity">{quantity} left in stock</p>
 
-        {!showEditForm && (
+        {
           <div className="actions product-actions">
             <button
               className="add-to-cart"
@@ -48,7 +48,7 @@ const Product = ({
               Edit
             </button>
           </div>
-        )}
+        }
 
         <button className="delete-button" onClick={() => onDeleteProduct(_id)}>
           <span>X</span>
