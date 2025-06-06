@@ -43,4 +43,13 @@ test("renders content", () => {
 
   const heading = screen.getByRole("heading", { name: /products/i });
   expect(heading).toBeInTheDocument();
+
+  const title1 = screen.getByRole("heading", {
+    name: /amazon kindle e-reader/i,
+  });
+  expect(title1).toBeInTheDocument();
+  const quantity1 = screen.getByText(/5\s* left in stock/);
+  expect(quantity1).toBeInTheDocument();
+  const price1 = screen.getByText(/\$\s*79\.99/);
+  expect(price1).toBeInTheDocument();
 });

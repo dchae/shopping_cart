@@ -21,8 +21,12 @@ test("renders content", () => {
     />,
   );
 
-  const heading = screen.getByRole("heading", {
-    name: /Amazon Kindle E-reader/i,
+  const title = screen.getByRole("heading", {
+    name: /amazon kindle e-reader/i,
   });
-  expect(heading).toBeInTheDocument();
+  expect(title).toBeInTheDocument();
+  const quantity = screen.getByText(/5\s* left in stock/);
+  expect(quantity).toBeInTheDocument();
+  const price = screen.getByText(/\$\s*79\.99/);
+  expect(price).toBeInTheDocument();
 });

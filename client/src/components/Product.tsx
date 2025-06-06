@@ -21,7 +21,7 @@ const Product = ({
   return (
     <div className="product-details">
       <h3>{title}</h3>
-      <p className="price">${price}</p>
+      <p className="price">${price.toFixed(2)}</p>
       <p className="quantity">{quantity} left in stock</p>
 
       {
