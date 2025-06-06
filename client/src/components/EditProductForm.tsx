@@ -73,7 +73,7 @@ const EditProductForm = ({ product, hide, onSubmit }: EditProductFormProps) => {
         </div>
 
         <div className="actions form-actions">
-          <button type="submit">Update</button>
+          <button type="submit">Update</button>{" "}
           <button type="button" onClick={hide}>
             Cancel
           </button>

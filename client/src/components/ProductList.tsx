@@ -1,4 +1,4 @@
-import Product from "./Product";
+import EditableProduct from "./EditableProduct";
 import type {
   Product as ProductType,
   NewProduct as NewProductType,
@@ -26,7 +26,7 @@ const ProductList = ({
       <h2>Products</h2>
       <ul>
         {products.map((product) => (
-          <Product
+          <EditableProduct
             key={product._id}
             product={product}
             onAddToCart={onAddToCart}
