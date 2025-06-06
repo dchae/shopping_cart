@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import apiService from "./services/apiService";
 import App from "./App";
@@ -70,6 +70,7 @@ test("renders products", async () => {
   expect(quantity1).toBeInTheDocument();
   const price1 = within(productDetails1!).getByText(/\$\s*79\.99/);
   expect(price1).toBeInTheDocument();
+  expect(mockedApiService.getProducts).toHaveBeenCalledOnce();
 });
 
 test("renders cart items", async () => {
@@ -105,6 +106,8 @@ test("renders cart items", async () => {
 
   const price2 = within(row2).getByText(/\$\s*649\.99/);
   expect(price2).toBeInTheDocument();
+
+  expect(mockedApiService.getCartItems).toHaveBeenCalledOnce();
 });
 
 test("updating product closes edit form", async () => {
@@ -158,6 +161,8 @@ test("updating product closes edit form", async () => {
   expect(nameInput).not.toBeInTheDocument();
   expect(priceInput).not.toBeInTheDocument();
   expect(quantityInput).not.toBeInTheDocument();
+
+  expect(mockedApiService.updateProduct).toHaveBeenCalledOnce();
 });
 
 test("Adding a product closes add product form and product appears", async () => {
@@ -208,4 +213,139 @@ test("Adding a product closes add product form and product appears", async () =>
   expect(quantity).toBeInTheDocument();
   const price = within(productDetails!).getByText(/\$\s*95\.50/);
   expect(price).toBeInTheDocument();
+});
+
+test("Deleting a product removes it", async () => {
+  const user = userEvent.setup();
+
+  mockedApiService.getProducts.mockResolvedValue(mockProducts);
+  mockedApiService.getCartItems.mockResolvedValue([]);
+  mockedApiService.deleteProduct.mockResolvedValue();
+
+  render(<App />);
+
+  const title1 = await screen.findByRole("heading", {
+    name: /amazon kindle e-reader/i,
+  });
+  const product1 = title1.parentElement!.parentElement!;
+  const deleteButton = within(product1).getByRole("button", { name: "X" });
+  user.click(deleteButton);
+
+  await waitFor(() => {
+    const titleRemoved = screen.queryByRole("heading", {
+      name: /amazon kindle e-reader/i,
+    });
+
+    expect(titleRemoved).toBeNull();
+  });
+
+  expect(mockedApiService.deleteProduct).toHaveBeenCalledOnce();
+});
+
+test("Adding an item to cart creates cart item", async () => {
+  const user = userEvent.setup();
+
+  const updatedProduct = {
+    _id: "1",
+    title: "Amazon Kindle E-reader",
+    quantity: 4,
+    price: 79.99,
+  };
+
+  const newCartItem = {
+    _id: "a1",
+    productId: "1",
+    title: "Amazon Kindle E-reader",
+    quantity: 1,
+    price: 79.99,
+  };
+
+  mockedApiService.getProducts.mockResolvedValue(mockProducts);
+  mockedApiService.getCartItems.mockResolvedValue([]);
+  mockedApiService.addToCart.mockResolvedValue([updatedProduct, newCartItem]);
+
+  render(<App />);
+
+  const cartElement = (
+    await screen.findByRole("heading", {
+      name: /your cart/i,
+    })
+  ).parentElement!;
+
+  await waitFor(() => {
+    const nullCartItem = within(cartElement).queryByText(
+      /amazon kindle e-reader/i,
+    );
+    expect(nullCartItem).toBeNull();
+  });
+
+  const title1 = await screen.findByRole("heading", {
+    name: /amazon kindle e-reader/i,
+  });
+  const product1 = title1.parentElement!.parentElement!;
+  let productQuantity = within(product1).getByText(/5\s* left in stock/);
+  expect(productQuantity).toBeInTheDocument();
+
+  const addToCartButton = within(product1).getByRole("button", {
+    name: /add to cart/i,
+  });
+  user.click(addToCartButton);
+
+  const cartTable = await within(cartElement).findByRole("table");
+  const cartRow = within(cartTable).getByRole("row", {
+    name: /amazon kindle e-reader/i,
+  });
+  expect(cartRow).toBeInTheDocument();
+
+  const cartQuantity = within(cartRow).getByText(/1/);
+  expect(cartQuantity).toBeInTheDocument();
+
+  const cartPrice = within(cartRow).getByText(/\$\s*79\.99/);
+  expect(cartPrice).toBeInTheDocument();
+
+  productQuantity = within(product1).getByText(/4\s* left in stock/);
+  expect(productQuantity).toBeInTheDocument();
+
+  expect(mockedApiService.addToCart).toHaveBeenCalledOnce();
+});
+
+test("Checkout removes cart items", async () => {
+  const user = userEvent.setup();
+
+  mockedApiService.getProducts.mockResolvedValue(mockProducts);
+  mockedApiService.getCartItems.mockResolvedValue(mockCartItems);
+
+  render(<App />);
+
+  const cartElement = (
+    await screen.findByRole("heading", {
+      name: /your cart/i,
+    })
+  ).parentElement!;
+
+  const cartTable = await within(cartElement).findByRole("table");
+  const cartRow = within(cartTable).getByRole("row", {
+    name: /amazon kindle e-reader/i,
+  });
+  expect(cartRow).toBeInTheDocument();
+
+  const checkoutCartButton = within(cartElement).getByRole("button", {
+    name: /checkout/i,
+  });
+  user.click(checkoutCartButton);
+
+  await waitFor(() => {
+    const nullCartTable = within(cartElement).queryByRole("table");
+    expect(nullCartTable).toBeNull();
+  });
+
+  const nullCartItem = within(cartElement).queryByText(
+    /amazon kindle e-reader/i,
+  );
+  expect(nullCartItem).toBeNull();
+
+  const emptyMsg = within(cartElement).getByText(/your cart is empty/i);
+  expect(emptyMsg).toBeInTheDocument();
+
+  expect(mockedApiService.checkoutCart).toHaveBeenCalledOnce();
 });
