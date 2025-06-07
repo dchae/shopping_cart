@@ -134,7 +134,7 @@ test("updating product closes edit form", async () => {
     name: /edit/i,
   });
   expect(editButton1).toBeInTheDocument();
-  user.click(editButton1);
+  await user.click(editButton1);
 
   const nameInput = await screen.findByRole("textbox", {
     name: /product name/i,
@@ -182,7 +182,7 @@ test("Adding a product closes add product form and product appears", async () =>
   const showAddFormButton = screen.getByRole("button", {
     name: /add a product/i,
   });
-  user.click(showAddFormButton);
+  await user.click(showAddFormButton);
 
   const nameInput = await screen.findByRole("textbox", {
     name: /product name/i,
@@ -229,7 +229,7 @@ test("Deleting a product removes it", async () => {
   });
   const product1 = title1.parentElement!.parentElement!;
   const deleteButton = within(product1).getByRole("button", { name: "X" });
-  user.click(deleteButton);
+  await user.click(deleteButton);
 
   await waitFor(() => {
     const titleRemoved = screen.queryByRole("heading", {
@@ -289,7 +289,7 @@ test("Adding an item to cart creates cart item", async () => {
   const addToCartButton = within(product1).getByRole("button", {
     name: /add to cart/i,
   });
-  user.click(addToCartButton);
+  await user.click(addToCartButton);
 
   const cartTable = await within(cartElement).findByRole("table");
   const cartRow = within(cartTable).getByRole("row", {
@@ -332,7 +332,7 @@ test("Checkout removes cart items", async () => {
   const checkoutCartButton = within(cartElement).getByRole("button", {
     name: /checkout/i,
   });
-  user.click(checkoutCartButton);
+  await user.click(checkoutCartButton);
 
   await waitFor(() => {
     const nullCartTable = within(cartElement).queryByRole("table");
@@ -344,7 +344,8 @@ test("Checkout removes cart items", async () => {
   );
   expect(nullCartItem).toBeNull();
 
-  const emptyMsg = within(cartElement).getByText(/your cart is empty/i);
+  // const emptyMsg = within(cartElement).getByText(/your cart is empty/i);
+  const emptyMsg = await screen.findByText(/your cart is empty/i);
   expect(emptyMsg).toBeInTheDocument();
 
   expect(mockedApiService.checkoutCart).toHaveBeenCalledOnce();
