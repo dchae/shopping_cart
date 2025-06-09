@@ -16,8 +16,8 @@ const App = () => {
       const [updatedProduct, updatedCartItem] =
         await apiService.addToCart(productId);
 
-      productDispatch(ProductAction.Update(updatedProduct));
-      cartDispatch(CartAction.Add(updatedCartItem));
+      productDispatch(ProductAction.UpdateProduct(updatedProduct));
+      cartDispatch(CartAction.AddToCart(updatedCartItem));
 
       if (callback) callback();
     } catch (e) {
@@ -31,7 +31,7 @@ const App = () => {
   ) => {
     try {
       const newProduct = await apiService.createProduct(data);
-      productDispatch(ProductAction.Create(newProduct));
+      productDispatch(ProductAction.AddProduct(newProduct));
 
       if (callback) callback();
     } catch (e) {
@@ -42,7 +42,7 @@ const App = () => {
   const handleDeleteProduct = async (id: string) => {
     try {
       await apiService.deleteProduct(id);
-      productDispatch(ProductAction.Delete(id));
+      productDispatch(ProductAction.DeleteProduct(id));
     } catch (e) {
       console.error(e);
     }
@@ -55,7 +55,7 @@ const App = () => {
   ) => {
     try {
       const updatedProduct = await apiService.updateProduct(id, data);
-      productDispatch(ProductAction.Update(updatedProduct));
+      productDispatch(ProductAction.UpdateProduct(updatedProduct));
 
       if (callback) callback();
     } catch (e) {
@@ -75,9 +75,9 @@ const App = () => {
   useEffect(() => {
     (async () => {
       const products = await apiService.getProducts();
-      productDispatch(ProductAction.Set(products));
+      productDispatch(ProductAction.SetProducts(products));
       const cartItems = await apiService.getCartItems();
-      cartDispatch(CartAction.Set(cartItems));
+      cartDispatch(CartAction.SetCartItems(cartItems));
     })();
   }, []);
 

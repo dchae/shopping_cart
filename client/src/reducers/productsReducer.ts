@@ -1,52 +1,74 @@
 import type { Product } from "../types";
 
 interface SetAction {
-  type: "set";
-  products: Array<Product>;
+  type: "SET_PRODUCTS";
+  payload: {
+    products: Array<Product>;
+  };
 }
 
-interface CreateAction {
-  type: "create";
-  product: Product;
+interface AddAction {
+  type: "ADD_PRODUCT";
+  payload: {
+    product: Product;
+  };
 }
 
 interface UpdateAction {
-  type: "update";
-  product: Product;
+  type: "UPDATE_PRODUCT";
+  payload: {
+    product: Product;
+  };
 }
 
 interface DeleteAction {
-  type: "delete";
-  id: string;
+  type: "DELETE_PRODUCT";
+  payload: {
+    id: string;
+  };
 }
 
 export const ProductAction = {
-  Set: (products: Array<Product>): SetAction => ({ type: "set", products }),
-  Create: (product: Product): CreateAction => ({ type: "create", product }),
-  Update: (product: Product): UpdateAction => ({
-    type: "update",
-    product,
+  SetProducts: (products: Array<Product>): SetAction => ({
+    type: "SET_PRODUCTS",
+    payload: { products },
   }),
-  Delete: (id: string): DeleteAction => ({
-    type: "delete",
-    id,
+  AddProduct: (product: Product): AddAction => ({
+    type: "ADD_PRODUCT",
+    payload: {
+      product,
+    },
+  }),
+  UpdateProduct: (product: Product): UpdateAction => ({
+    type: "UPDATE_PRODUCT",
+    payload: {
+      product,
+    },
+  }),
+  DeleteProduct: (id: string): DeleteAction => ({
+    type: "DELETE_PRODUCT",
+    payload: {
+      id,
+    },
   }),
 };
 
-type Action = SetAction | CreateAction | UpdateAction | DeleteAction;
+type Action = SetAction | AddAction | UpdateAction | DeleteAction;
 
 export const productsReducer = (products: Array<Product>, action: Action) => {
   switch (action.type) {
-    case "set":
-      return action.products;
-    case "create":
-      return [...products, action.product];
-    case "update":
+    case "SET_PRODUCTS":
+      return action.payload.products;
+    case "ADD_PRODUCT":
+      return [...products, action.payload.product];
+    case "UPDATE_PRODUCT":
       return products.map((product) =>
-        product._id === action.product._id ? action.product : product,
+        product._id === action.payload.product._id
+          ? action.payload.product
+          : product,
       );
-    case "delete":
-      return products.filter((product) => product._id !== action.id);
+    case "DELETE_PRODUCT":
+      return products.filter((product) => product._id !== action.payload.id);
     default:
       throw new Error("Invalid action type.");
   }
