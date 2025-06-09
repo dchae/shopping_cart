@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
 import EditableProduct from "./EditableProduct";
 import SortToolbar from "./SortToolbar";
-import type { SortState } from "./SortToolbar";
+import useSorter from "../hooks/useSorter";
+import type { SortState } from "../hooks/useSorter";
 import type {
   Product as ProductType,
   NewProduct as NewProductType,
@@ -24,30 +24,14 @@ const ProductList = ({
   onDeleteProduct,
   onUpdateProduct,
 }: ProductListProps) => {
-  const [sortState, setSortState] = useState<SortState>({
+  const initialSortState: SortState = {
     sortBy: "name",
     orderBy: "ASC",
-  });
+  };
 
-  const sortProducts = (products: Array<ProductType>, sortState: SortState) =>
-    products.toSorted((a, b) => {
-      if (sortState.orderBy === "DESC") [a, b] = [b, a];
-      switch (sortState.sortBy) {
-        case "name":
-          return a.title
-            .toLocaleLowerCase()
-            .localeCompare(b.title.toLocaleLowerCase());
-        case "price":
-        case "quantity":
-          return a[sortState.sortBy] - b[sortState.sortBy];
-        default:
-          throw new Error("Unhandled sort field");
-      }
-    });
-
-  const sortedProducts = useMemo(
-    () => sortProducts(products, sortState),
-    [products, sortState],
+  const { sortedProducts, sortState, setSortState } = useSorter(
+    products,
+    initialSortState,
   );
 
   return (

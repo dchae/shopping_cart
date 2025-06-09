@@ -1,12 +1,5 @@
 import type { ReactNode } from "react";
-
-type Field = "name" | "price" | "quantity";
-type Order = "ASC" | "DESC";
-
-export interface SortState {
-  sortBy: Field;
-  orderBy: Order;
-}
+import type { SortField, SortState } from "../hooks/useSorter";
 
 interface SortButtonProps {
   active: boolean;
@@ -21,15 +14,16 @@ const SortButton = ({
   onClick,
   children,
 }: SortButtonProps) => {
-  const style = active
-    ? {
-        border: "1px solid #07575b",
-      }
-    : {
-        color: "#07575b",
-        border: "1px solid #07575b",
-        background: "transparent",
-      };
+  const inactiveStyle = {
+    color: "#07575b",
+    border: "1px solid #07575b",
+    background: "transparent",
+  };
+
+  const style = {
+    border: "1px solid #07575b",
+    ...(active ? {} : inactiveStyle),
+  };
 
   return (
     <button style={style} onClick={onClick}>
@@ -47,7 +41,7 @@ interface SortToolbarProps {
 }
 
 const SortToolbar = ({ sortState, setSortState }: SortToolbarProps) => {
-  const createHandler = (field: Field) => {
+  const createHandler = (field: SortField) => {
     return () => {
       setSortState(({ sortBy, orderBy }) => {
         if (sortBy === field) {
