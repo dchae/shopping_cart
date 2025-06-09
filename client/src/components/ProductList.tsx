@@ -1,4 +1,7 @@
+import { useState } from "react";
 import EditableProduct from "./EditableProduct";
+import SortToolbar from "./SortToolbar";
+import type { SortState } from "./SortToolbar";
 import type {
   Product as ProductType,
   NewProduct as NewProductType,
@@ -21,11 +24,32 @@ const ProductList = ({
   onDeleteProduct,
   onUpdateProduct,
 }: ProductListProps) => {
+  const [sortState, setSortState] = useState<SortState>({
+    sortBy: "name",
+    orderBy: "ASC",
+  });
+
+  const sortedProducts = products.toSorted((a, b) => {
+    if (sortState.orderBy === "DESC") [a, b] = [b, a];
+    switch (sortState.sortBy) {
+      case "name":
+        return a.title
+          .toLocaleLowerCase()
+          .localeCompare(b.title.toLocaleLowerCase());
+      case "price":
+      case "quantity":
+        return a[sortState.sortBy] - b[sortState.sortBy];
+      default:
+        throw new Error("Unhandled sort field");
+    }
+  });
+
   return (
     <div className="product-listing">
-      <h2>Products</h2>
+      <h2 style={{ margin: 0 }}>Products</h2>
+      <SortToolbar sortState={sortState} setSortState={setSortState} />
       <ul>
-        {products.map((product) => (
+        {sortedProducts.map((product) => (
           <EditableProduct
             key={product._id}
             product={product}
