@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import apiService from "./services/apiService";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 import ToggleableAddProductForm from "./components/ToggleableAddProductForm";
+import { ProductAction, productsReducer } from "./reducers/productsReducer";
 import type {
-  Product as ProductType,
   CartItem as CartItemType,
   NewProduct as NewProductType,
 } from "./types";
 
 const App = () => {
-  const [products, setProducts] = useState<Array<ProductType>>([]);
+  const [products, productDispatch] = useReducer(productsReducer, []);
   const [cartItems, setCartItems] = useState<Array<CartItemType>>([]);
 
   const handleAddToCart = async (productId: string, callback?: () => void) => {
@@ -18,11 +18,7 @@ const App = () => {
       const [updatedProduct, updatedCartItem] =
         await apiService.addToCart(productId);
 
-      setProducts((products) =>
-        products.map((p) =>
-          p._id === updatedProduct._id ? updatedProduct : p,
-        ),
-      );
+      productDispatch(ProductAction.Update(updatedProduct));
       setCartItems((cartItems) => {
         if (cartItems.some((c) => c._id === updatedCartItem._id)) {
           return cartItems.map((c) =>
@@ -45,7 +41,7 @@ const App = () => {
   ) => {
     try {
       const newProduct = await apiService.createProduct(data);
-      setProducts((products) => [...products, newProduct]);
+      productDispatch(ProductAction.Create(newProduct));
 
       if (callback) callback();
     } catch (e) {
@@ -56,7 +52,7 @@ const App = () => {
   const handleDeleteProduct = async (id: string) => {
     try {
       await apiService.deleteProduct(id);
-      setProducts(products.filter((p) => p._id !== id));
+      productDispatch(ProductAction.Delete(id));
     } catch (e) {
       console.error(e);
     }
@@ -69,11 +65,7 @@ const App = () => {
   ) => {
     try {
       const updatedProduct = await apiService.updateProduct(id, data);
-      setProducts((products) => {
-        return products.map((product) =>
-          product._id === id ? updatedProduct : product,
-        );
-      });
+      productDispatch(ProductAction.Update(updatedProduct));
 
       if (callback) callback();
     } catch (e) {
@@ -92,7 +84,9 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      setProducts(await apiService.getProducts());
+      // setProducts(await apiService.getProducts());
+      const products = await apiService.getProducts();
+      productDispatch(ProductAction.Set(products));
       setCartItems(await apiService.getCartItems());
     })();
   }, []);
