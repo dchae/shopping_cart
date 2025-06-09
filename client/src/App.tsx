@@ -1,17 +1,15 @@
-import { useState, useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import apiService from "./services/apiService";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 import ToggleableAddProductForm from "./components/ToggleableAddProductForm";
 import { ProductAction, productsReducer } from "./reducers/productsReducer";
-import type {
-  CartItem as CartItemType,
-  NewProduct as NewProductType,
-} from "./types";
+import { CartAction, cartReducer } from "./reducers/cartReducer";
+import type { NewProduct as NewProductType } from "./types";
 
 const App = () => {
   const [products, productDispatch] = useReducer(productsReducer, []);
-  const [cartItems, setCartItems] = useState<Array<CartItemType>>([]);
+  const [cartItems, cartDispatch] = useReducer(cartReducer, []);
 
   const handleAddToCart = async (productId: string, callback?: () => void) => {
     try {
@@ -19,15 +17,7 @@ const App = () => {
         await apiService.addToCart(productId);
 
       productDispatch(ProductAction.Update(updatedProduct));
-      setCartItems((cartItems) => {
-        if (cartItems.some((c) => c._id === updatedCartItem._id)) {
-          return cartItems.map((c) =>
-            c._id === updatedCartItem._id ? updatedCartItem : c,
-          );
-        } else {
-          return [...cartItems, updatedCartItem];
-        }
-      });
+      cartDispatch(CartAction.Add(updatedCartItem));
 
       if (callback) callback();
     } catch (e) {
@@ -76,7 +66,7 @@ const App = () => {
   const handleCheckoutCart = async () => {
     try {
       await apiService.checkoutCart();
-      setCartItems([]);
+      cartDispatch(CartAction.Checkout());
     } catch (e) {
       console.error(e);
     }
@@ -84,10 +74,10 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      // setProducts(await apiService.getProducts());
       const products = await apiService.getProducts();
       productDispatch(ProductAction.Set(products));
-      setCartItems(await apiService.getCartItems());
+      const cartItems = await apiService.getCartItems();
+      cartDispatch(CartAction.Set(cartItems));
     })();
   }, []);
 
