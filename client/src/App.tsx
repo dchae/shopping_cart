@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useContext } from "react";
 import apiService from "./services/apiService";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
@@ -6,10 +6,12 @@ import ToggleableAddProductForm from "./components/ToggleableAddProductForm";
 import { ProductAction, productsReducer } from "./reducers/productsReducer";
 import { CartAction, cartReducer } from "./reducers/cartReducer";
 import type { NewProduct as NewProductType } from "./types";
+import { ThemeContext } from "./hooks/useTheme";
 
 const App = () => {
   const [products, productDispatch] = useReducer(productsReducer, []);
   const [cartItems, cartDispatch] = useReducer(cartReducer, []);
+  const theme = useContext(ThemeContext);
 
   const handleAddToCart = async (productId: string, callback?: () => void) => {
     try {
@@ -81,6 +83,10 @@ const App = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    document.body.className = "--theme-" + theme.options.mode;
+  }, [theme]);
+
   return (
     <>
       <header>
@@ -88,6 +94,11 @@ const App = () => {
         <Cart items={cartItems} onCheckout={handleCheckoutCart} />
       </header>
       <main>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <button onClick={theme.toggleMode}>
+            {theme.options.mode === "light" ? "☀️" : "🌙"}{" "}
+          </button>
+        </div>
         <ProductList
           products={products}
           onAddToCart={handleAddToCart}

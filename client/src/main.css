@@ -200,3 +200,59 @@ table td.total {
   text-align: right;
   padding-top: 20px;
 }
+
+/* Dark mode styles */
+.--theme-dark {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.--theme-dark #app {
+  background: #1a1a1a;
+}
+
+.--theme-dark header {
+  background: #003d40;
+  color: #fff;
+}
+
+.--theme-dark main {
+  background: #2d3e42;
+}
+
+.--theme-dark .product {
+  background: #1e2a2d;
+  color: #fff;
+}
+
+.--theme-dark .product .price {
+  color: #ff6b7a;
+}
+
+.--theme-dark .checkout {
+  background: #003d40;
+  color: #c4dfe6;
+  border: 1px solid #c4dfe6;
+}
+
+.--theme-dark button {
+  background: #003d40;
+  color: #fff;
+}
+
+.--theme-dark button:disabled {
+  background: transparent;
+  color: #888;
+}
+
+.--theme-dark .product .edit-form,
+.--theme-dark .add-form {
+  border-top-color: #555;
+}
+
+.--theme-dark input[type="text"],
+.--theme-dark input[type="number"] {
+  background: #2d3e42;
+  color: #fff;
+  border: 1px solid #555;
+}
