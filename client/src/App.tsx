@@ -104,9 +104,7 @@ const App = () => {
           <button onClick={theme.toggleMode}>
             {theme.options.mode === "light" ? "☀️" : "🌙"}{" "}
           </button>
-          <button onClick={handleLocaleToggleClick}>
-            {locale.code === "en-US" ? "$" : "€"}{" "}
-          </button>
+          <button onClick={handleLocaleToggleClick}>{locale.code}</button>
         </div>
         <ProductList
           products={products}
