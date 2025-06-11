@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { ReactNode } from "react";
 import { ThemeContext } from "./ThemeContext";
 import type { ThemeOptions } from "./ThemeContext";
