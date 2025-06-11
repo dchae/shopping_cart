@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import type { Product as ProductType } from "../types";
+import { LocaleContext } from "../context/LocaleContext";
 
 interface ProductProps {
   product: ProductType;
@@ -13,15 +15,22 @@ const Product = ({
   onDeleteProduct,
   onShowEditForm,
 }: ProductProps) => {
+  const locale = useContext(LocaleContext);
   const { _id, title, price, quantity } = product;
   const handleAddToCartButtonClick = () => {
     onAddToCart(_id);
   };
 
+  const finalPrice = locale.convert(price, locale.code);
+  const currencySymbol = locale.code === "USD" ? "$" : "€";
+
   return (
     <div className="product-details">
       <h3>{title}</h3>
-      <p className="price">${price.toFixed(2)}</p>
+      <p className="price">
+        {currencySymbol}
+        {finalPrice.toFixed(2)}
+      </p>
       <p className="quantity">{quantity} left in stock</p>
 
       {

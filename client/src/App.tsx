@@ -6,12 +6,14 @@ import ToggleableAddProductForm from "./components/ToggleableAddProductForm";
 import { ProductAction, productsReducer } from "./reducers/productsReducer";
 import { CartAction, cartReducer } from "./reducers/cartReducer";
 import type { NewProduct as NewProductType } from "./types";
-import { ThemeContext } from "./hooks/useTheme";
+import { ThemeContext } from "./context/ThemeContext";
+import { LocaleContext } from "./context/LocaleContext";
 
 const App = () => {
   const [products, productDispatch] = useReducer(productsReducer, []);
   const [cartItems, cartDispatch] = useReducer(cartReducer, []);
   const theme = useContext(ThemeContext);
+  const locale = useContext(LocaleContext);
 
   const handleAddToCart = async (productId: string, callback?: () => void) => {
     try {
@@ -74,6 +76,10 @@ const App = () => {
     }
   };
 
+  const handleLocaleToggleClick = () => {
+    locale.setCode((code) => (code === "USD" ? "EUR" : "USD"));
+  };
+
   useEffect(() => {
     (async () => {
       const products = await apiService.getProducts();
@@ -97,6 +103,9 @@ const App = () => {
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <button onClick={theme.toggleMode}>
             {theme.options.mode === "light" ? "☀️" : "🌙"}{" "}
+          </button>
+          <button onClick={handleLocaleToggleClick}>
+            {locale.code === "en-US" ? "$" : "€"}{" "}
           </button>
         </div>
         <ProductList
