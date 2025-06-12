@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useContext } from "react";
+import type { BaseSyntheticEvent } from "react";
 import apiService from "./services/apiService";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
@@ -31,13 +32,12 @@ const App = () => {
 
   const handleAddProduct = async (
     data: NewProductType,
-    callback?: () => void,
+    e: BaseSyntheticEvent,
   ) => {
     try {
       const newProduct = await apiService.createProduct(data);
       productDispatch(ProductAction.AddProduct(newProduct));
-
-      if (callback) callback();
+      e.target.reset();
     } catch (e) {
       console.error(e);
     }

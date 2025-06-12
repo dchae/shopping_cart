@@ -1,63 +1,32 @@
-import { useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { NewProduct } from "../types";
-import type { Product as ProductType } from "../types";
+import { newProductSchema } from "../types";
 
 interface AddProductFormProps {
-  onSubmit: (data: NewProduct, callback?: () => void) => void;
+  onSubmit: (data: NewProduct) => void;
   onHide: () => void;
 }
 
 const AddProductForm = ({ onSubmit, onHide }: AddProductFormProps) => {
-  const [formValues, setFormValues] = useState({
-    title: "",
-    price: "",
-    quantity: "",
-  });
-  const { title, price, quantity } = formValues;
-
-  const valueChangeHandler = (prop: keyof ProductType) => {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      setFormValues((p) => ({ ...p, [prop]: e.target.value }));
-    };
-  };
-
-  const handleReset = () => {
-    setFormValues({
-      title: "",
-      price: "",
-      quantity: "",
-    });
-
-    onHide();
-  };
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-
-    onSubmit(
-      {
-        title: title,
-        price: Number(price),
-        quantity: Number(quantity),
-      },
-      handleReset,
-    );
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(newProductSchema) });
 
   return (
     <div className="add-form">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="input-group">
           <label htmlFor="product-name">Product Name:</label>
           <input
             type="text"
             id="product-name"
-            name="product-name"
-            value={title}
-            onChange={valueChangeHandler("title")}
             required
+            {...register("title")}
           />
+          {errors.title && <p>{errors.title.message}</p>}
         </div>
 
         <div className="input-group">
@@ -65,13 +34,12 @@ const AddProductForm = ({ onSubmit, onHide }: AddProductFormProps) => {
           <input
             type="number"
             id="product-price"
-            name="product-price"
             min="0"
             step="0.01"
-            value={price}
-            onChange={valueChangeHandler("price")}
             required
+            {...register("price", { valueAsNumber: true })}
           />
+          {errors.price && <p>{errors.price.message}</p>}
         </div>
 
         <div className="input-group">
@@ -79,12 +47,11 @@ const AddProductForm = ({ onSubmit, onHide }: AddProductFormProps) => {
           <input
             type="number"
             id="product-quantity"
-            name="product-quantity"
             min="0"
-            value={quantity}
-            onChange={valueChangeHandler("quantity")}
             required
+            {...register("quantity", { valueAsNumber: true })}
           />
+          {errors.quantity && <p>{errors.quantity.message}</p>}
         </div>
 
         <div className="actions form-actions">
